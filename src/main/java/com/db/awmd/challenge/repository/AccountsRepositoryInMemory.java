@@ -30,4 +30,18 @@ public class AccountsRepositoryInMemory implements AccountsRepository {
     accounts.clear();
   }
 
+  @Override
+  public void updateAccount(Account account) {
+	  accounts.remove(account.getAccountId());
+	  accounts.put(account.getAccountId(), account);
+  }
+
+  @Override
+  public Account getBalance(String accountId) {
+	// TODO 
+	return null;
+  }
+
+
+
 }

@@ -10,4 +10,10 @@ public interface AccountsRepository {
   Account getAccount(String accountId);
 
   void clearAccounts();
+
+  // aggiorna il balance di un singolo account
+  void updateAccount(Account account);
+  
+  Account getBalance(String accountId);
+  
 }

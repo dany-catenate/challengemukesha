@@ -24,4 +24,11 @@ public class AccountsService {
   public Account getAccount(String accountId) {
     return this.accountsRepository.getAccount(accountId);
   }
+  
+
+  public void updateAccount(Account account) {
+	this.accountsRepository.updateAccount(account);
+	// TODO Auto-generated method stub
+	
+}
 }
