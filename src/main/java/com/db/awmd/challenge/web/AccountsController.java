@@ -1,12 +1,9 @@
 package com.db.awmd.challenge.web;
-
 import com.db.awmd.challenge.domain.Account;
 import com.db.awmd.challenge.domain.Transfer;
 import com.db.awmd.challenge.exception.DuplicateAccountIdException;
-import com.db.awmd.challenge.repository.AccountsRepositoryInMemory;
 import com.db.awmd.challenge.service.AccountsService;
 import com.db.awmd.challenge.service.TransfersService;
-
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,17 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountsController {
 
   private final AccountsService accountsService;
-  private final TransfersService transfersService;
+  String message;
 
   @Autowired
   public AccountsController(AccountsService accountsService, TransfersService transfersService) {
     this.accountsService = accountsService;
-	this.transfersService = transfersService;
   }
-  
-  
-  
-  //For the accounts
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> createAccount(@RequestBody @Valid Account account) {
@@ -58,37 +49,27 @@ public class AccountsController {
     return this.accountsService.getAccount(accountId);
   }
   
-  
-  
-  //update one single account
-  
-  @PutMapping(path = "/updateAccount", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Object> updateAccount(@RequestBody @Valid Account account) {
-    log.info("Updating account {}", account);
+  // Here you lunch with a JSON in input
+  /*input:
+  /*
+	{
+	"transferFromAccountId": "1",
+	"transferToAccountId": "2",
+    "amountTransferred": "57"
+	}
+  */
 
-    this.accountsService.updateAccount(account);
-    
-
-    return new ResponseEntity<>(HttpStatus.CREATED);
-  }
- 
-  
-  
-  
-  // For the transfers
-  
-  @PostMapping(path = "/createTransfer", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(path = "/transactions", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Object> createTransfer(@RequestBody @Valid Transfer transfer) {
-	this.transfersService.createTransfer(transfer);
-	log.info("Creating transfer {}", transfer);
-    return new ResponseEntity<>(HttpStatus.CREATED);
+	this.accountsService.createTransfer(transfer);
+	this.message=transfer.getTransferFromAccountId() + " transferred "+ 
+			transfer.getAmountTransferred() +" To "+ transfer.getTransferToAccountId();
+
+	log.info("Created transaction {}", transfer);
+	
+	Transfer result = new Transfer(transfer.getTransferFromAccountId(), transfer.getTransferToAccountId(), transfer.getAmountTransferred());
+
+	return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
   }
-  
-  @GetMapping(path = "createdTransfer/{transferFromAccountId}")
-  public Transfer getTransfer(@PathVariable String transferFromAccountId) {
-    log.info("Retrieving transfer for id {}", transferFromAccountId);
-    return this.transfersService.getTransfer(transferFromAccountId);
-  }
-  
 
 }

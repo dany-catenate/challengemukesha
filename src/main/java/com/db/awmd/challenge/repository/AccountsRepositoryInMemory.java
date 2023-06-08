@@ -1,7 +1,7 @@
 package com.db.awmd.challenge.repository;
-
 import com.db.awmd.challenge.domain.Account;
 import com.db.awmd.challenge.exception.DuplicateAccountIdException;
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Repository;
@@ -31,17 +31,8 @@ public class AccountsRepositoryInMemory implements AccountsRepository {
   }
 
   @Override
-  public void updateAccount(Account account) {
-	  accounts.remove(account.getAccountId());
-	  accounts.put(account.getAccountId(), account);
+  public void createTransfer(String accountIdFrom, String accountIdTo, BigDecimal amount) {
+		// Nothing to do here 
   }
-
-  @Override
-  public Account getBalance(String accountId) {
-	// TODO 
-	return null;
-  }
-
-
-
+  
 }

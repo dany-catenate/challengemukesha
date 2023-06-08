@@ -1,16 +1,13 @@
 package com.db.awmd.challenge.domain;
-
 import java.math.BigDecimal;
-
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-
 import org.hibernate.validator.constraints.NotEmpty;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.db.awmd.challenge.domain.Transfer;
 import lombok.Data;
+import net.minidev.json.annotate.JsonIgnore;
 
 @Data
 public class Transfer {
@@ -27,7 +24,6 @@ public class Transfer {
 	  @Min(value = 0, message = "Initial balance must be positive.")
 	  private BigDecimal amountTransferred;
 
-	  
 	  public Transfer(String transferToAccountId, String transferFromAccountId) {
 	    this.transferFromAccountId = transferFromAccountId;
 	    this.transferToAccountId = transferToAccountId;
@@ -41,5 +37,14 @@ public class Transfer {
 	    this.transferFromAccountId = transferFromAccountId;
 	    this.transferToAccountId = transferToAccountId;
 	    this.amountTransferred = amountTransferred;
+	    
 	  }
+	  
+	  //to be removed
+//	  @JsonIgnore
+//	  private BigDecimal balanceAfterTransfer;
+//	  @JsonIgnore
+//	  public void setBalanceAfterTransfer(BigDecimal balanceAfterTransfer) {
+//			this.balanceAfterTransfer = balanceAfterTransfer;			
+//		}
 }

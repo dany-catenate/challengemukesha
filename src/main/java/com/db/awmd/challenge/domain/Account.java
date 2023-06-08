@@ -1,5 +1,4 @@
 package com.db.awmd.challenge.domain;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
@@ -23,9 +22,6 @@ public class Account {
     this.accountId = accountId;
     this.balance = BigDecimal.ZERO;
   }
-  public BigDecimal getBalance(String accountId) {
-	    return this.balance;
-	}
 
   @JsonCreator
   public Account(@JsonProperty("accountId") String accountId,
@@ -33,4 +29,5 @@ public class Account {
     this.accountId = accountId;
     this.balance = balance;
   }
+
 }
