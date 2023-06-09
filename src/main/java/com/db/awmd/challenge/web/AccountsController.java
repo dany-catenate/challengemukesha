@@ -1,4 +1,5 @@
 package com.db.awmd.challenge.web;
+
 import com.db.awmd.challenge.domain.Account;
 import com.db.awmd.challenge.domain.Transfer;
 import com.db.awmd.challenge.exception.DuplicateAccountIdException;
@@ -22,54 +23,55 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AccountsController {
 
-  private final AccountsService accountsService;
-  String message;
+	private final AccountsService accountsService;
+	String message;
 
-  @Autowired
-  public AccountsController(AccountsService accountsService, TransfersService transfersService) {
-    this.accountsService = accountsService;
-  }
-
-  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Object> createAccount(@RequestBody @Valid Account account) {
-    log.info("Creating account {}", account);
-
-    try {
-    this.accountsService.createAccount(account);
-    } catch (DuplicateAccountIdException daie) {
-      return new ResponseEntity<>(daie.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    return new ResponseEntity<>(HttpStatus.CREATED);
-  }
-
-  @GetMapping(path = "/{accountId}")
-  public Account getAccount(@PathVariable String accountId) {
-    log.info("Retrieving account for id {}", accountId);
-    return this.accountsService.getAccount(accountId);
-  }
-  
-  // Here you lunch with a JSON in input
-  /*input:
-  /*
-	{
-	"transferFromAccountId": "1",
-	"transferToAccountId": "2",
-    "amountTransferred": "57"
+	@Autowired
+	public AccountsController(AccountsService accountsService, TransfersService transfersService) {
+		this.accountsService = accountsService;
 	}
-  */
 
-  @PostMapping(path = "/transactions", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Object> createTransfer(@RequestBody @Valid Transfer transfer) {
-	this.accountsService.createTransfer(transfer);
-	this.message=transfer.getTransferFromAccountId() + " transferred "+ 
-			transfer.getAmountTransferred() +" To "+ transfer.getTransferToAccountId();
+	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> createAccount(@RequestBody @Valid Account account) {
+		log.info("Creating account {}", account);
 
-	log.info("Created transaction {}", transfer);
-	
-	Transfer result = new Transfer(transfer.getTransferFromAccountId(), transfer.getTransferToAccountId(), transfer.getAmountTransferred());
+		try {
+			this.accountsService.createAccount(account);
+		} catch (DuplicateAccountIdException daie) {
+			return new ResponseEntity<>(daie.getMessage(), HttpStatus.BAD_REQUEST);
+		}
 
-	return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
-  }
+		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
+
+	@GetMapping(path = "/{accountId}")
+	public Account getAccount(@PathVariable String accountId) {
+		log.info("Retrieving account for id {}", accountId);
+		return this.accountsService.getAccount(accountId);
+	}
+
+	// Here you launch with a JSON in input of the following syntax
+	/*
+	 * input:
+	 * {
+	 * "transferFromAccountId": "1", 
+	 * "transferToAccountId": "2",
+	 * "amountTransferred": "57" 
+	 * }
+	 */
+
+	@PostMapping(path = "/transactions", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> createTransfer(@RequestBody @Valid Transfer transfer) {
+		this.accountsService.createTransfer(transfer);
+		this.message = transfer.getTransferFromAccountId() + " transferred " + transfer.getAmountTransferred() + " To "
+				+ transfer.getTransferToAccountId();
+
+		log.info("Created transaction {}", transfer);
+
+		Transfer result = new Transfer(transfer.getTransferFromAccountId(), transfer.getTransferToAccountId(),
+				transfer.getAmountTransferred());
+
+		return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
+	}
 
 }
