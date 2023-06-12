@@ -2,6 +2,7 @@ package com.db.awmd.challenge.web;
 
 import com.db.awmd.challenge.domain.Account;
 import com.db.awmd.challenge.domain.Transfer;
+import com.db.awmd.challenge.exception.BusinessException;
 import com.db.awmd.challenge.exception.DuplicateAccountIdException;
 import com.db.awmd.challenge.service.AccountsService;
 import com.db.awmd.challenge.service.TransfersService;
@@ -52,26 +53,22 @@ public class AccountsController {
 
 	// Here you launch with a JSON in input of the following syntax
 	/*
-	 * input:
-	 * {
-	 * "transferFromAccountId": "1", 
-	 * "transferToAccountId": "2",
-	 * "amountTransferred": "57" 
-	 * }
+	 * input: { "transferFromAccountId": "1", "transferToAccountId": "2",
+	 * "amountTransferred": "57" }
 	 */
 
 	@PostMapping(path = "/transactions", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> createTransfer(@RequestBody @Valid Transfer transfer) {
-		this.accountsService.createTransfer(transfer);
-		this.message = transfer.getTransferFromAccountId() + " transferred " + transfer.getAmountTransferred() + " To "
-				+ transfer.getTransferToAccountId();
+
+		try {
+			this.accountsService.createTransfer(transfer);
+		} catch (BusinessException BE) {
+			return new ResponseEntity<>(BE.getMessage(), HttpStatus.BAD_REQUEST);
+		}
 
 		log.info("Created transaction {}", transfer);
 
-		Transfer result = new Transfer(transfer.getTransferFromAccountId(), transfer.getTransferToAccountId(),
-				transfer.getAmountTransferred());
-
-		return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
+		return new ResponseEntity<>("The process of the transaction has been completed with success.", HttpStatus.ACCEPTED);
 	}
 
 }

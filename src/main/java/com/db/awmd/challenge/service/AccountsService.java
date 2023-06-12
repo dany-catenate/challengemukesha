@@ -2,6 +2,7 @@ package com.db.awmd.challenge.service;
 
 import com.db.awmd.challenge.domain.Account;
 import com.db.awmd.challenge.domain.Transfer;
+import com.db.awmd.challenge.exception.AccountNotExistException;
 import com.db.awmd.challenge.exception.OverDraftException;
 import com.db.awmd.challenge.repository.AccountsRepository;
 import com.db.awmd.challenge.variables.ErrorCodes;
@@ -38,11 +39,33 @@ public class AccountsService implements NotificationService {
 		/* Just logging the amount money transferred */
 		log.info("log -- Here is amount of money transferred: " + transfer.getAmountTransferred());
 
+		/* Checking whether the first account exists */
+		if (this.accountsRepository.getAccount(transfer.getTransferFromAccountId()) == null) {
+			String errorMessage = "It is not possible to transfer any funds as there is no existing account linked to the identification number "
+					+ transfer.getTransferFromAccountId() + "."
+
+					+ transfer.getTransferFromAccountId();
+			log.info(errorMessage);
+			throw new AccountNotExistException(
+					"Account with id: " + transfer.getTransferFromAccountId() + " does not exist.",
+					ErrorCodes.ACCOUNT_ERROR);
+
+		}
+
 		Account accountFrom = this.accountsRepository.getAccount(transfer.getTransferFromAccountId());
-//			.orElseThrow(() -> new AccountNotExistException("Account with id: " + transfer.getAccountFromId() + " does not exist.", ErrorCodes.ACCOUNT_ERROR));
+
+		/* Checking whether the second account exists */
+		if (this.accountsRepository.getAccount(transfer.getTransferToAccountId()) == null) {
+			String errorMessage = "It is not possible to transfer any funds as there is no existing account linked to the identification number "
+					+ transfer.getTransferToAccountId() + "." + transfer.getTransferToAccountId();
+			log.info(errorMessage);
+			throw new AccountNotExistException(
+					"Account with id: " + transfer.getTransferToAccountId() + " does not exist."
+					, ErrorCodes.ACCOUNT_ERROR);
+
+		}
 
 		Account accountTo = this.accountsRepository.getAccount(transfer.getTransferToAccountId());
-//				.orElseThrow(() -> new AccountNotExistException("Account with id: " + transfer.getAccountFromId() + " does not exist.", ErrorCodes.ACCOUNT_ERROR));
 
 		/* Checking if there is enough money to transfer */
 		if (accountFrom.getBalance().compareTo(transfer.getAmountTransferred()) < 0) {
@@ -70,7 +93,7 @@ public class AccountsService implements NotificationService {
 		/* sending a notification to the receiving account */
 		String msg2 = "id of the account money transferred From: " + transfer.getTransferFromAccountId()
 				+ " Amount transferred: {}." + temp2;
-		this.notifyAboutTransfer(accountFrom, msg2);
+		this.notifyAboutTransfer(accountTo, msg2);
 		log.info("log -- Balance After Transation for Account id: {} is {} euri.", accountTo.getAccountId(),
 				accountTo.getBalance(), " - ", accountTo.getBalance());
 

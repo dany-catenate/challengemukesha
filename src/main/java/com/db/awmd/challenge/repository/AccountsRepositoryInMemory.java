@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import com.db.awmd.challenge.domain.Account;
 import com.db.awmd.challenge.exception.DuplicateAccountIdException;
 
+import lombok.Synchronized;
+
 @Repository
 public class AccountsRepositoryInMemory implements AccountsRepository {
 
@@ -33,6 +35,7 @@ public class AccountsRepositoryInMemory implements AccountsRepository {
 	}
 
 	@Override
+	@Synchronized("accounts")
 	public void createTransfer(String accountIdFrom, String accountIdTo, BigDecimal amount) {
 		// Nothing to do here
 	}
