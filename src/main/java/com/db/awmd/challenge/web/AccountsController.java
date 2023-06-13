@@ -53,8 +53,7 @@ public class AccountsController {
 
 	// Here you launch with a JSON in input of the following syntax
 	/*
-	 * input: { "transferFromAccountId": "1", "transferToAccountId": "2",
-	 * "amountTransferred": "57" }
+	 * input: { "transferFromAccountId": "1", "transferToAccountId": "2", "amountTransferred": "57" }
 	 */
 
 	@PostMapping(path = "/transactions", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -68,7 +67,8 @@ public class AccountsController {
 
 		log.info("Created transaction {}", transfer);
 
-		return new ResponseEntity<>("The process of the transaction has been completed with success.", HttpStatus.ACCEPTED);
+		return new ResponseEntity<>("The process of the transaction has been completed with success.",
+				HttpStatus.ACCEPTED);
 	}
 
 }
