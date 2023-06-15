@@ -105,7 +105,7 @@ public class AccountsControllerTest {
 
 	@Test
 	public void createTransfer() throws Exception {
-		// creating a the first account
+		// creating the first account
 		this.mockMvc.perform(post("/v1/accounts").contentType(MediaType.APPLICATION_JSON)
 				.content("{\"accountId\":\"Id-123\",\"balance\":1000}")).andExpect(status().isCreated());
 		Account account1BeforeTransfer = accountsService.getAccount("Id-123");
@@ -158,7 +158,20 @@ public class AccountsControllerTest {
 						+ "\"amountTransferred\":10000}"))
 		.andExpect(status().isBadRequest())
 		.andExpect(content().string("Account with id: " + "Id-123" + " does not have enough balance to transfer."));
-	
+		
+		// with amount to transfer less than zero 
+				this.mockMvc.perform(post("/v1/accounts/transactions").contentType(MediaType.APPLICATION_JSON)
+						.content("{\"transferFromAccountId\":\"Id-123\","
+								+ "\"transferToAccountId\":\"Id-124\","
+								+ "\"amountTransferred\":-100}"))
+				.andExpect(status().isBadRequest());
+				
+		// making a transfer with the same accountId FROM as the accountId TO 
+		this.mockMvc.perform(post("/v1/accounts/transactions").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"transferFromAccountId\":\"Id-123\","
+						+ "{\"transferToAccountId\":\"Id-123\","
+						+ "\"amountTransferred\":100}"))
+		.andExpect(status().isBadRequest());	
 	
 	}
 	

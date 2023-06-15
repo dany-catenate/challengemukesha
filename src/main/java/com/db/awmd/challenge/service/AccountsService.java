@@ -3,6 +3,7 @@ package com.db.awmd.challenge.service;
 import com.db.awmd.challenge.domain.Account;
 import com.db.awmd.challenge.domain.Transfer;
 import com.db.awmd.challenge.exception.AccountNotExistException;
+import com.db.awmd.challenge.exception.BusinessException;
 import com.db.awmd.challenge.exception.OverDraftException;
 import com.db.awmd.challenge.repository.AccountsRepository;
 import com.db.awmd.challenge.variables.ErrorCodes;
@@ -52,6 +53,7 @@ public class AccountsService implements NotificationService {
 
 		}
 
+		//Then extract the accountFrom
 		Account accountFrom = this.accountsRepository.getAccount(transfer.getTransferFromAccountId());
 
 		/* Checking whether the second account exists */
@@ -65,7 +67,18 @@ public class AccountsService implements NotificationService {
 
 		}
 
+		//Then extract the accountTo
 		Account accountTo = this.accountsRepository.getAccount(transfer.getTransferToAccountId());
+		
+		/* Checking if the first and second accounts are not the same */
+		if (transfer.getTransferFromAccountId().equals(transfer.getTransferToAccountId())) {
+			String errorMessage = "It is not possible to transfer any funds as the money is being transfer to the same account as the original account.";
+			log.info(errorMessage);
+			throw new BusinessException(
+					"Account(FROM) with id: " + transfer.getTransferFromAccountId() 
+					+ " is same the Account(TO) with id: " + transfer.getTransferFromAccountId() + ".",
+					ErrorCodes.ACCOUNT_ERROR);
+		}
 
 		/* Checking if there is enough money to transfer */
 		if (accountFrom.getBalance().compareTo(transfer.getAmountTransferred()) < 0) {
